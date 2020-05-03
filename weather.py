@@ -31,17 +31,17 @@ if __name__ == "__main__":
     SYSLOG_FMT = "weather.py: %(levelname)s:%(name)s: %(message)s"
     log = logging.getLogger()
 
-    # Set up stream handler with custom format.
-    streamhandler = logging.StreamHandler()
-    streamhandler.setFormatter(logging.Formatter(fmt=STREAM_FMT))
-    log.addHandler(streamhandler)
-
     if args.verbose:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.INFO)
 
-    if not args.local:
+    if args.local:
+        # Set up stream handler with custom format.
+        streamhandler = logging.StreamHandler()
+        streamhandler.setFormatter(logging.Formatter(fmt=STREAM_FMT))
+        log.addHandler(streamhandler)
+    else:
         # Set root logger output to syslog with custom format.
         syslog_handler = logging.handlers.SysLogHandler(address = "/dev/log")
         syslog_handler.setFormatter(logging.Formatter(fmt=SYSLOG_FMT))

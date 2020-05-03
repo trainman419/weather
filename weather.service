@@ -1,0 +1,12 @@
+[Unit]
+Description=Train Shed Weather Monitor
+
+[Service]
+Type=simple
+User=hendrix
+ExecStart=/home/hendrix/weather/weather.py
+RestartSec=5
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

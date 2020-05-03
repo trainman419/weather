@@ -29,3 +29,9 @@ sudo cp 99-gpio.rules /etc/udev/rules.d
 sudo udevadm control --reload-rules
 sudo udevadm trigger --verbose
 ```
+
+Install and start systemd service:
+```
+sudo cp -i weather.service /etc/systemd/system
+sudo systemctl enable --now weather.service
+```
