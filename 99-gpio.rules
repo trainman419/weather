@@ -1,0 +1,2 @@
+# Assign GPIO to plugdev group.
+KERNEL=="gpiochip*", GROUP="plugdev"
