@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     client = InfluxDBClient('arg', 8086, 'home_assistant', 'home_assistant', 'home_assistant')
 
-    PERIOD = 1.0
+    PERIOD = 15.0
 
     n = round(time.time())
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
         now = datetime.now()
         humidity, temperature = sensor.read()
-        print(now.isoformat())
+        print("{}: {:.2} C, {:.2} %RH".format(now.isoformat(), temperature, humidity))
         data = [
             {
                 "measurement": "train_shed",
