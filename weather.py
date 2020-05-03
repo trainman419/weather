@@ -1,15 +1,53 @@
 #!/usr/bin/env python3
 
+import argparse
+from datetime import datetime
+import logging
+import logging.handlers
+import math
+import sys
 import time
+import os
+
 import board
 import busio
-from datetime import datetime
+import setproctitle
 
 from hih6130 import HIH6130
 
 from influxdb import InfluxDBClient
 
 if __name__ == "__main__":
+    setproctitle.setproctitle(os.path.basename(__file__))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", default=False)
+    parser.add_argument("-l", "--local", action="store_true", default=False,
+            help="Skip logging to syslog")
+
+    args = parser.parse_args()
+
+    # Get root logger.
+    STREAM_FMT = "[%(asctime)s] %(levelname)s:%(name)s: %(message)s"
+    SYSLOG_FMT = "weather.py: %(levelname)s:%(name)s: %(message)s"
+    log = logging.getLogger()
+
+    # Set up stream handler with custom format.
+    streamhandler = logging.StreamHandler()
+    streamhandler.setFormatter(logging.Formatter(fmt=STREAM_FMT))
+    log.addHandler(streamhandler)
+
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.INFO)
+
+    if not args.local:
+        # Set root logger output to syslog with custom format.
+        syslog_handler = logging.handlers.SysLogHandler(address = "/dev/log")
+        syslog_handler.setFormatter(logging.Formatter(fmt=SYSLOG_FMT))
+        log.addHandler(syslog_handler)
+        log.debug("Logging to syslog")
+
     bus = busio.I2C(board.SCL, board.SDA)
 
     sensor = HIH6130(bus)
@@ -18,17 +56,16 @@ if __name__ == "__main__":
 
     PERIOD = 15.0
 
-    n = round(time.time())
+    n = math.ceil(time.time())
+
+    startdelay = n - time.time()
+    log.debug("Sleeping for %f at startup", startdelay)
+    time.sleep(startdelay)
 
     while True:
-        n += PERIOD
-        remain = n - time.time()
-        if remain > 0.0:
-            time.sleep(remain)
-
         now = datetime.now()
         humidity, temperature = sensor.read()
-        print("{}: {:.2f} C, {:.2f} %RH".format(now.isoformat(), temperature, humidity * 100))
+        log.info("%.2f C, %.2f %%RH", temperature, humidity * 100)
         data = [
             {
                 "measurement": "train_shed",
@@ -41,5 +78,8 @@ if __name__ == "__main__":
         ]
         client.write_points(data)
 
-
-
+        n += PERIOD
+        remain = n - time.time()
+        if remain > 0.0:
+            log.debug("Sleeping for %.4f", remain)
+            time.sleep(remain)
