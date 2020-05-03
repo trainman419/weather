@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     device.write(out)
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     bytes_read = bytearray(4)
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     status = (bytes_read[0] & 0xC0) >> 6
     print("Status", status)
 
-    humidity = ((bytes_read[0] & 0x03) << 8) | (bytes_read[1])
+    humidity = ((bytes_read[0] & 0x3F) << 8) | (bytes_read[1])
     print(humidity, (1<<14))
     humidity = (humidity / ((1<<14) - 2))
     print("Humidity: {:.2f} %RH".format(humidity * 100.0))
