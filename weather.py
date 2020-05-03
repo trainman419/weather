@@ -23,13 +23,12 @@ if __name__ == "__main__":
     while True:
         n += PERIOD
         remain = n - time.time()
-        print(remain)
         if remain > 0.0:
             time.sleep(remain)
 
         now = datetime.now()
         humidity, temperature = sensor.read()
-        print("{}: {:.2} C, {:.2} %RH".format(now.isoformat(), temperature, humidity))
+        print("{}: {:.2f} C, {:.2f} %RH".format(now.isoformat(), temperature, humidity * 100))
         data = [
             {
                 "measurement": "train_shed",
