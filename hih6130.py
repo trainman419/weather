@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Circuitpython driver (and program) for HIH-6180 sensor.
+# Circuitpython driver (and program) for HIH-6130 sensor.
 #
 # Author: Austin Hendrix
 #
@@ -18,7 +18,7 @@ except ImportError:
     import ustruct as struct
 
 
-class HIH6180(object):
+class HIH6130(object):
     pass
 
 if __name__ == "__main__":
