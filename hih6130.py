@@ -9,14 +9,7 @@ import time
 import board
 import busio
 
-from micropython import const
 import adafruit_bus_device.i2c_device as i2c_device
-
-try:
-    import struct
-except ImportError:
-    import ustruct as struct
-
 
 class HIH6130(object):
 
